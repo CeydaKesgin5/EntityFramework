@@ -1,0 +1,200 @@
+
+ORM(Object Relational Mapping(Nesne İlişkisel Eşleme))
+ORM: Veri tabanı ve yazılım arasında oop kullanarak iletişimi sağlayan yaklaşım
+Geliştirilen yazılım içerisinde OOP yapısına uygun olmayan,katı ve komplkes veritabanı sorguları yerine veritabanı objelerinin, bir OOP nesnesi gibi düşünülerek yazılım tarafından kullanılabilmesine olanak sağlayan bir yaklaşımdır.Veriler ve tablolar yazılım tarafında bir nesneye karşılık gelir.
+
+Entity Framework Core
+ORM yaklaşımını benimsemiş bir araçtır.
+Kod içerisinde OOP’den faydalanmamızı sağlayarak SQL sorgulrını oluşturmamızı sağlar.
+Açık kaynaktır.
+Kod içerisinde tekrarlanan sql sorgularından kurtarır.
+Code First ve Database First yaklaşımları ile yazılım ve veritabanı arasındaki iletişimi sağlar.
+Query için LINQ sorgularını destekler.
+
+dotnet tool install --global dotnet-ef
+microsoft.EntityFrameworkCore.Design(CLI)
+microsoft.EntityFrameworkCore.Tools(PMC)
+
+
+EF Core, veritabanlarıyla iki farklı yaklşımı baz alarak çalışma yapmaktadır.
+Database First
+Code First
+Yaklaşım; bir konuyu,olguyu, yapıyı, inşayı, sorunu, çözümü ele alış bir başka deyişle ona bütünsel olarak bakış biçimidir.
+Her yaklaşım bir davranışa özel subjektiftir.
+EF Core, veritabanı çalışmaları için, veritabanının önceden olup olmadığına göre farklı yaklaşımlar sunar. 
+
+Yaklaşımların Temel Amacı Nedir?
+Bir ORM aracı olan EF Core ile yapılacak çalışmalarda hedef veritabanının kod kısmına aktarılması gerekecektir.
+Hedef veritabanı bazen önceden oluşturulmuş veritabanı olabileceği gibi bazen de yeni oluşturulacak bir veritabanı olabilir. İşte bu yaklaşımlar önceden var olup olmama durumuna göre kod kısmında modellenme süreçlerinin hangi davranışlar gerçekleştirildiğini belirleyecek olan tekniği bize sunar.
+
+Var olan bir veritabanında EF Core ile işlem yapmamız istenirse Database First yaklaşımını tercih etmeliyiz. Veritabanı inşa edilmemiş bir projeye başlıyor olsaydık Database First ya da Code First kullanıyor olacaktık. Hangi yaklaşımı tercih edeceğimizi birçok parametrenin değerlendirmesine bağlıdır.
+
+
+
+
+
+
+
+
+Database First: Var olan veritabanını tersine mühendislik ile analiz edip otomatik olarak kod kısmında modelleyen bir yaklaşımdır. Hedef veritabanının belirli talimatlar aracılığı ile otomatik olarak kod kısmında OOP eşliğinde modellenmesidir.
+Avantaj
+Hazır veritabanlarını hızlı bir şekilde modelleyebilmemizi sağlar.
+Vt’da süreçte olan değişiklikleri hızlıca koda aktarabilmemizi sağlar.
+Tüm veritabanlarında kullanılabilir.
+Dezavantaj
+Kod veritabanına göre modelleneceği için veritabanı bilgisi gerektirir.
+Değişiklikler veritabanı kısmında olacağı için geliştirici tarafından sürekli kontrol/güncelleme yapılması gerekmektedir.
+
+
+
+Code First: EF Core ile çalışma yapılacak veritabanı önceden oluşturulmamış ise bu veritabanını kod kısmında modelleyerek ardından bu modele uygun veritabanını sunucuda oluşturtan(migration) yaklaşımdır. Bu yaklaşımda veri tabanı önce kodla tasarlanır, sonra veritabanı sunucusuna gönderilerek vt oluşturulur. 
+Database First ile tam tersi davranışa sahiptir.
+
+
+
+Avantaj
+Kod üzerinden veritabanını modellememizi sağlar.
+Koddaki değişiklik yönetimi geliştirici tarafından yapılacağı için herhangi bir veritabanı bilgisine gerek duyulmamaktadır.
+Değişiklikler kod üzerinden yapılacağı için veritabanını sürekli kontrol etmeye gerek yoktur.
+Dezavantaj
+Veritabanı ve yazılım kısmını geliştiricinin sorumluluğundadır.
+
+
+Veritabanı önceden oluşturulmuş ise kesinlikle Database First kullanılmalıdır. Fakat hedef veritabanı yeni oluşturulacak ise ister kod ile kendimiz tasarlayabiliriz(Code First) ya da manuel olarak veritabanı oluşturup bunu kod kısmına inşa edebiliriz.(Database First)
+
+Yapısal Olarak EF Core Aktörleri
+Veritabanı içerisindeki tablolar ve tablolar içerisinde sütun ve nesnelerin modellenmesinde OOP kullanılır. Modelleme class’lar üzerinden gerçekleşir.
+
+Veritabanı Nesnesi - DbContext
+EF Core’da veritabanını temsil edecek sınıf 
+
+
+
+Tablo kolonları
+EF Core da bir tabloyu temsil eden sınıfa entity dedik. Bu haliyle kolonlar da entity sınıfı içerisinde property olarak tanımlanmalıdır.
+public class Customer{
+public int CustomerId{get; set; }
+public string Name{get; set; }
+public string ContactTitle{get; set; }
+}
+
+Bir entity içerisindeki propertyler, o entitynn modellediği tablo içerisindeki kolonlara karşılık gelmektedir.
+Veriler
+Veritabanındaki veriler entity’deki instance’larına karşılık gelmektedir. (Instance’leri new ile oluşturuyoruz. )
+
+
+Veritabanı        DbContext
+Table                Entity
+Sütunlar           Property
+Veriler              Instance
+
+Tersine Mühendislik: Bir sunucudaki veritabanının iskelesini kod kısmında oluşturma sürecidir.
+Bu süreci Package Manager Console(PMC) ya da Dotnet CLI aracılığıyla 2 farklı şekilde yürütebiliriz.
+
+PMC ile tersine mühendislik
+Scaffold: Hedef veritabanının kod kısmında modellenmesini sağlayan bir talimat 
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] 
+
+PMC kullanmak için 
+Microsoft.EntityFrameworkCore.Tools
+Database Provider yüklememiz gerekmektedir.
+
+Dotnet CLI ile tersine mühendislik
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] 
+
+Microsoft.EntityFrameworkCore.Design
+Database Provider(örn; Microsoft.EntityFrameworkCore.SqlServer)   yüklememiz gerekmektedir.
+
+Tabloları Belirtme
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider]-Tables Table1, Table2…
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - - table Table1 - - table Table2…
+
+DbContext Adını Belirtme
+Scaffold ile modellenen veritabanı için oluşturulacak context nesnesi adını veritabanından alacaktır. Eğer context nesnesinin adını değiştirmek istersek aşağıdaki talimatları uygulayabiliriz.
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - Context ContextName
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - - context ContextName
+
+Path ve Namespace Belirtme
+Entityler ve DbContext sınıfı default olarak direkt proje nin kök dizinine modellenir ve projenin varsayılan namespace’ini kullanırlar Eğer ki bunlara müdahale etmek istiyorsak aşağıdaki talimatları kullanabiliriz. 
+Path:
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - ContextDir Data -OutputDir Models (ContextDir Data isimli bir path altında oluşturuluyor,OutputDir de Models isimli klasör altında oluştuluyor.)
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - - context-dir Data - - output-dir Models
+
+Namespace: 
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - Namespace YourNamespace -ContextNamespace YourNamespace
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - - namespace Yournamespace - - context-namespace YourContextNamespace
+
+
+Model Güncelleme
+Veritabanında olan değişiklikleri Scaffold ettiğimizde zaten var olduğuna dair geri bildirim alacağız. En güncel haliyle modellemesi için Force kullanırız. 
+Scaffold-DbContext ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] - Force
+dotnet ef dbcontext scaffold ‘Connection String’ Microsoft.EntityFrameworkCore.[Provider] 
+-- force
+
+Modellerin Özelleştirilmesi 
+Database First yaklaşımında veritabanı nesneleri otomatik olarak modelleyip generate eder. Bazen otomatik oluşturulan entityler veya context nesneleri üzerinde değişiklik yapmak isteyebiliriz.
+
+
+Code First Yaklaşımı
+
+Migration: Kod kısmında modellediğimiz veritabanını, veritabanı sunucusunun anlayacağı hale getiren bir C# class’ı.
+
+public partial class migration{
+public override void Up(MigrationBuilder migrationBuilder){
+migrationBuilder.CreateTable…
+}
+public override void Down(MigrationBuilder migrationBuilder){
+migrationBuilder.DropTable…
+}
+              }
+
+Migrate: Migration oluşturulduktan sonra bunu veritabanı sunucusuna gönderip veritabanı oluşturma eylemi.
+
+Migration oluşturmak için temel gereksinimler
+DbContext ve Entity class’larını oluşturduktan sonra Package Manager Console ve Dotnet CLI talimatları verilebilir.
+Microsoft.EntityFrameworkCore.Tools kütüphanesi gerekli 
+
+
+Migration Oluşturma
+Package Manager Console
+add-migration[Migration Name]
+ Dotnet CLI
+             dotnet ef migrations add[Migration Name]
+
+Migration Path Belirleme
+Package Manager Console
+add-migration[Migration Name] -OutputDir [Path]
+ Dotnet CLI
+             dotnet ef migrations add[Migration Name] - -output-dir [Path]
+
+Migration Silme
+Package Manager Console
+remove-migration 
+Dotnet CLI
+             dotnet ef migrations remove
+
+Migration Listeleme
+Package Manager Console
+get-migration 
+Dotnet CLI
+             dotnet ef migrations list
+
+Migration Veritabanına Gönderme/Migrate Etme(Up fonksiyonu)
+Package Manager Console
+update-migration 
+Dotnet CLI
+             dotnet ef migrations update
+
+Migration’ları Geri Alma(Down fonksiyonu)
+Package Manager Console
+update-database[Migration Name] 
+Dotnet CLI
+             dotnet ef database update[Migration Name] 
+
+
+Kod üzerinden Migrate Operasyonu
+Migration’ları tool aracılığyla migrate edebildiğimiz gibi kod üzerinden de uygulamanın ayakta olduğu süreçte(runtime’da) veritabanını migrate edebiliyoruz.
+
+AppDbContext context=new();
+await context.Database.MigrateAsync();
+
