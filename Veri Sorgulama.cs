@@ -242,6 +242,182 @@ ETicaretContext context = new();
 #endregion
 
 #endregion
+
+#region Diğer Sorgulama Fonksiyonları
+
+#region CountAsync
+//Oluşturulan sorgunun execute edilmesi neticeside kaç adet satırın elde edileceğini sayısal olarak
+//(int)bizlere bildiren fonksiyondur.
+//var urunler = (await context.Urunler.ToListAsync()).Count(); //Enumerable ken sayım yapıyor.
+//var urunler=await context.Urunler.CountAsync();//IQuarable haline countAsync fonksiyonu ekledik.
+//Yani generate edilmiş(sunucuya gönderilecek) haline fonksiyonu ekledik. Select sorgusuna count ekliyor.
+
+#endregion
+
+#region LongCountAsync
+//Oluşturulan sorgunun execute edilmesi neticeside kaç adet satırın elde edileceğini sayısal olarak
+//(long) bizlere bildiren fonksiyondur.
+//var urunler = await context.Urunler.LongCountAsync();
+//var urunler = await context.Urunler.LongCountAsync(u=>u.Fiyat%7==0);//şart ile
+
+
+#endregion
+
+#region AnyAsync
+//Sorgu neticesinde verinin gelip gelmediğini boolen türünde dönen fonksiyondur.
+//var urunler = context.Urunler.AnyAsync();
+//var urunler1 = context.Urunler.AnyAsync();
+//var urunler2 = context.Urunler.AnyAsync(u => u.UrunAdi.Contains("1"));
+//IQuerable ile çalışıyoruz
+#endregion
+
+#region MaxRegion
+//var fiyat = await context.Urunler.MaxAsync(u=>u.Fiyat);
+#endregion
+
+#region MinRegion
+//var fiyat = await context.Urunler.MinAsync(u => u.Fiyat);
+
+#endregion
+
+#region Distinct
+//Sorguda tekrarlayan kayıtlar varsa bunları tekilleştiren bir işleve sahip fonksiyondur.
+//var urunler = context.Urunler.Distinct().ToListAsync();//execute etmemiz gerekiyor.(ToList ile)
+#endregion
+
+#region AllAsync
+//Bir sorgu neticesinde gelen verilerin, ver,len şarta uyup uymadığını kontrol etmektedir.Eğer ki tüm veriler şarta uyuyorsa true,
+//uymuyorsa false dondürecektir
+//var m = await context.Urunler.AllAsync(u=>u.Fiyat>5000);//bütün verilerin fiyatı 5000den büyükse true döndürür.
+#endregion
+
+#region SumAsync
+//Vermiş olduğumuz sayısal propertynin toplamını alır.
+//var fiyatToplam = await context.Urunler.SumAsync(u=>u.Fiyat);
+#endregion
+
+#region AverageAsync
+//Vermiş olduğumuz sayısal propertynin aritmetik ortalamasını alır.
+//var aritmatikToplam = await context.Urunler.AverageAsync(u => u.Fiyat);
+#endregion
+
+#region ContainsAsync
+//Like '%...%'sorgusu oluşturmamızı sağlar.
+//var urunler = context.Urunler.Where(u => u.UrunAdi.Contains("7")).ToListAsync();
+#endregion
+
+#region StartsWidth
+//Like '...%' sorgusu oluşturmamızı sağlar.
+//var urunler = context.Urunler.Where(u => u.UrunAdi.StartsWith("7")).ToListAsync();
+//7 ile başlayanları getir.
+#endregion
+
+#region EndsWith
+//Like '%...' sorgusu oluşturmamızı sağlar.
+//var urunler = context.Urunler.Where(u => u.UrunAdi.EndsWith("7")).ToListAsync();
+//7İle bitenler getir.
+
+#endregion
+
+#region Sorgu Sonucu Dönüşüm Fonksiyonları
+//Bu fonksiyonlar ile sorgu neticesinde elde edilen verileri isteğimiz doğrultusunda farklı türlerde projecsiyon edebiliyoruz.
+
+#region ToDictionary
+//Sorgu neticesinde gelecek olan veriyi bir dictionary olarak elde etmek/tutmak/karşılamak istiyorsak kullanılır.
+
+//var urunler = await context.Urunler.ToDictionaryAsync(u=>u.UrunAdi,u=>u.Fiyat);
+//ToList ile aynı amaca hizmet etmektedir. Yani, oluşturulan sorguyu execute edip neticesini alırlar.
+//ToList: Gelen sorgu neticesinde entity türünde bir koleksiyona(List<TEntity>) dönştürmkteyken
+//ToDictionary ise: Gelen sorgu neticesini Dictionary türünden bir koleksiyona dönüştürecektir.
+
+#endregion
+
+#region ToArrayAsync
+//Oluşturulan sorguyu dizi olarak elde eder.
+//ToList ile muadil amaca hizmet eder. Yani sorguyu execute eder lakin gelen sonucu entity dizisi olarak elde eder.
+
+//var urunler = await context.Urunler.ToArrayAsync();
+#endregion
+
+#region Select
+//Select fonksiyonunun işlevsel olarak birden fazla davranşı vardır.
+//1. Select fonksiyonu, generate edilecek sorgunun çekilecek kolonlarını ayarlamamızı sağlamaktadır.
+
+//var urunler=await context.Urunler.Select(u=>new Urun
+//{
+//    Id=u.Id,
+//    Fiyat=u.Fiyat
+//}
+//).ToListAsync();
+
+//2. Select fonksiyonu, gelen verileri farklı türlerde karşılamamızı sağlar.
+//var urunler2 = await context.Urunler.Select(u => new 
+//{
+//    Id = u.Id,
+//    Fiyat = u.Fiyat
+//}
+//).ToListAsync();
+
+#endregion
+
+#region SelectMany//ilişkisel,join ile kullanımda
+//Select ile aynı amaca hizmet eder. Ama ilişkisel tablolar neticesinde gelen koleksiyonel verileri de tekilleştirip projeksiyon
+//etmemizi sağlar.
+
+//var urunler2 = await context.Urunler.Include(u=>u .Parcalar).SelectMany(u => u.Parcalar, (u, p) => new
+//{
+//    u.Id,
+//    u.Fiyat,
+//    p.ParcaAdi
+
+//}).ToListAsync();
+
+#endregion
+
+
+#endregion
+
+#region GroupBy Fonksiyonu
+//Gruplama yapmamızı sağlayan fonksiyondur.
+#region Method syntax
+//var data=await context.Urunler.GroupBy(x => x.Fiyat).Select(group=>new
+//{
+//    Count=group.Count(),
+//    Fiyat=group.Key
+//}).ToListAsync();
+
+#endregion
+
+#region Query Syntax
+var datas = await (from urun in context.Urunler
+                   group urun by urun.Fiyat
+             into @group//gruplama işlemi neticesinde elde edilen veri group ile temsil ediliyor.
+                        //select group;
+                   select new
+                   {
+                       Fiyat = @group.Key,
+                       Count = @group.Count(),
+                   }).ToListAsync();
+#endregion
+
+#endregion
+
+#region foreach
+//bir sorgulaam fonksiyonu değildir.
+//sorgulama neticesinde elde edilen koleksiyoel veriler üzerinde iterasyonle olarak teker teker verileri elde edip işlemler yapabilmmizi sağlayan bir fonksiyondur.
+//foreach döngüsünün method halidir.
+
+foreach (var item in datas)
+{
+
+}
+datas.ForEach(x =>
+{
+
+}
+);
+#endregion
+#endregion
 public class ETicaretContext : DbContext
 {
     public DbSet<Urun> Urunler { get; set; }
@@ -283,4 +459,10 @@ public class UrunParca
     public Parca Parca { get; set; }
 
 
+}
+
+public class UrunDetay
+{
+    public int Id { get; set;}
+    public float Fiyat { get; set; }
 }
